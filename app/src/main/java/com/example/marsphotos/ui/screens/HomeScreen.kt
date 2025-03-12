@@ -44,7 +44,7 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import coil.request.ImageRequest
 import com.example.marsphotos.R
-import com.example.marsphotos.model.MarsPhoto
+import com.example.marsphotos.model.Pokemon
 import com.example.marsphotos.ui.theme.MarsPhotosTheme
 
 @Composable
@@ -100,7 +100,7 @@ fun ErrorScreen(retryAction: () -> Unit, modifier: Modifier = Modifier) {
  */
 @Composable
 fun PhotosGridScreen(
-    photos: List<MarsPhoto>,
+    pokemons: List<Pokemon>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
@@ -109,33 +109,36 @@ fun PhotosGridScreen(
         modifier = modifier.padding(horizontal = 4.dp),
         contentPadding = contentPadding,
     ) {
-        items(items = photos, key = { photo -> photo.id }) { photo ->
-            MarsPhotoCard(
-                photo,
-                modifier = Modifier
-                    .padding(4.dp)
-                    .fillMaxWidth()
-                    .aspectRatio(1.5f)
-            )
+        items(items = pokemons, key = { pokemon -> pokemon.name }) { pokemon ->
+            PokemonCard(pokemon, modifier = Modifier.padding(4.dp))
         }
     }
 }
 
+
 @Composable
-fun MarsPhotoCard(photo: MarsPhoto, modifier: Modifier = Modifier) {
+fun PokemonCard(pokemon: Pokemon, modifier: Modifier = Modifier) {
+    val pokemonId = pokemon.url.split("/").dropLast(1).last() // Extract ID from URL
+    val imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemonId.png"
+
     Card(
-        modifier = modifier,
-        shape = MaterialTheme.shapes.medium,
-        elevation = CardDefaults.cardElevation(defaultElevation = 8.dp)
+        modifier = modifier.aspectRatio(1f),
+        colors = CardDefaults.cardColors(containerColor = MaterialTheme.colorScheme.surface),
+        elevation = CardDefaults.cardElevation(defaultElevation = 4.dp)
     ) {
         AsyncImage(
-            model = ImageRequest.Builder(context = LocalContext.current).data(photo.imgSrc)
-                .crossfade(true).build(),
-            error = painterResource(R.drawable.ic_broken_image),
-            placeholder = painterResource(R.drawable.loading_img),
-            contentDescription = stringResource(R.string.pokemon_photo),
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxWidth()
+            model = ImageRequest.Builder(LocalContext.current)
+                .data(imageUrl)
+                .crossfade(true)
+                .build(),
+            contentDescription = pokemon.name,
+            contentScale = ContentScale.Fit,
+            modifier = Modifier.fillMaxSize()
+        )
+        Text(
+            text = pokemon.name.capitalize(),
+            style = MaterialTheme.typography.bodyLarge,
+            modifier = Modifier.align(Alignment.CenterHorizontally).padding(8.dp)
         )
     }
 }
@@ -160,7 +163,7 @@ fun ErrorScreenPreview() {
 @Composable
 fun PhotosGridScreenPreview() {
     MarsPhotosTheme {
-        val mockData = List(10) { MarsPhoto("$it", "") }
+        val mockData = List(10) { Pokemon("$it", "") }
         PhotosGridScreen(mockData)
     }
 }

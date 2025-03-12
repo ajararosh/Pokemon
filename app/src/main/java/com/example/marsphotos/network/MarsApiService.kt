@@ -16,18 +16,27 @@
 
 package com.example.marsphotos.network
 
-import com.example.marsphotos.model.MarsPhoto
+import com.example.marsphotos.model.Pokemon
+import kotlinx.serialization.Serializable
+import okhttp3.ResponseBody
 import retrofit2.http.GET
+import retrofit2.http.Path
+import kotlinx.serialization.SerialName
+import kotlinx.serialization.json.Json
 
-/**
- * A public interface that exposes the [getPhotos] method
- */
-interface MarsApiService {
-    /**
-     * Returns a [List] of [MarsPhoto] and this method can be called from a Coroutine.
-     * The @GET annotation indicates that the "photos" endpoint will be requested with the GET
-     * HTTP method
-     */
-    @GET("photos")
-    suspend fun getPhotos(): List<MarsPhoto>
+@Serializable
+data class PokemonResponse(
+    @SerialName("results") val results: List<Pokemon> // Keep only needed fields
+)
+
+@Serializable
+data class Pokemon(
+    val name: String,
+    val url: String
+)
+
+interface PokeApiService {
+    @GET("pokemon?limit=300")  // Fetch first 100 Pokémon
+    suspend fun getPokemons(): PokemonResponse
 }
+
