@@ -34,8 +34,8 @@ interface AppContainer {
  * Variables are initialized lazily and the same instance is shared across the whole app.
  */
 class DefaultAppContainer : AppContainer {
-//    private val baseUrl = "https://android-kotlin-fun-mars-server.appspot.com/"
-    private val baseUrl = "https://pokeapi.co/api/v2/"
+    private val baseUrl = "https://android-kotlin-fun-mars-server.appspot.com/"
+//    private val baseUrl = "https://pokeapi.co/api/v2/"
 
     /**
      * Use the Retrofit builder to build a retrofit object using a kotlinx.serialization converter
