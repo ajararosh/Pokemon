@@ -24,7 +24,7 @@ import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.AP
 import androidx.lifecycle.viewModelScope
 import androidx.lifecycle.viewmodel.initializer
 import androidx.lifecycle.viewmodel.viewModelFactory
-import com.example.marsphotos.MarsPhotosApplication
+import com.example.marsphotos.PokemonPhotosApplication
 import com.example.marsphotos.data.PokemonRepository
 import com.example.marsphotos.model.Pokemon
 import kotlinx.coroutines.launch
@@ -75,7 +75,7 @@ class MarsViewModel(private val marsPhotosRepository: PokemonRepository) : ViewM
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
-                val application = (this[APPLICATION_KEY] as MarsPhotosApplication)
+                val application = (this[APPLICATION_KEY] as PokemonPhotosApplication)
                 val marsPhotosRepository = application.container.marsPhotosRepository
                 MarsViewModel(marsPhotosRepository = marsPhotosRepository)
             }
