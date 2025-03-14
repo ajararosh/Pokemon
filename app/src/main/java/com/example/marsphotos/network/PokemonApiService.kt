@@ -9,7 +9,7 @@ import kotlinx.serialization.SerialName
 data class PokemonResponse(
     @SerialName("results") val results: List<Pokemon> // Keep only needed fields
 )
-
+// Optain data from the pokemon
 @Serializable
 data class Pokemon(
     val name: String,
@@ -17,7 +17,7 @@ data class Pokemon(
 )
 
 interface PokeApiService {
-    @GET("pokemon?limit=12")  // Fetch first 100 Pokémon
+    @GET("pokemon?limit=300")  // Fetch first 100 Pokémon
     suspend fun getPokemons(): PokemonResponse
 }
 
