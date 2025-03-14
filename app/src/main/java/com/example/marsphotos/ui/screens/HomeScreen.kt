@@ -47,6 +47,8 @@ import androidx.compose.ui.text.input.ImeAction
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
+import androidx.compose.material3.OutlinedCard
+import androidx.compose.material3.OutlinedTextField
 import androidx.compose.material3.contentColorFor
 import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
@@ -122,7 +124,7 @@ fun HomeScreen(
 
 @Composable
 fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
-    TextField(
+    OutlinedTextField(
         value = searchText,
         onValueChange = { onSearchTextChanged(it) },
         label = { Text("Search Pokémon") },
