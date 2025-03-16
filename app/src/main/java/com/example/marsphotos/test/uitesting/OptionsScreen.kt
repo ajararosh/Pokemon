@@ -79,7 +79,9 @@ fun OptionsScreen() {
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
                     )
-                    PressableImage(R.drawable.start_ball,"Game Ball")
+                    PressableImage(R.drawable.start_ball,
+                        "Game Ball",
+                        onClick = {})
                 }
                 // Entry Ball and Text
                 Column(
@@ -91,7 +93,8 @@ fun OptionsScreen() {
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
                     )
-                    PressableImage(R.drawable.entry_ball,"Entry ball")
+                    PressableImage(R.drawable.entry_ball,"Entry ball",
+                        onClick = {})
 
                 }
                 // Game Ball and Text
@@ -105,7 +108,8 @@ fun OptionsScreen() {
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
                     )
-                    PressableImage(R.drawable.game_ball, "Game Ball")
+                    PressableImage(R.drawable.game_ball, "Game Ball",
+                        onClick = {})
                 }
             }
         }
@@ -113,22 +117,29 @@ fun OptionsScreen() {
 }
 
 @Composable
-fun PressableImage(imageRes: Int, contentDescription: String, modifier: Modifier = Modifier) {
+fun PressableImage(
+    imageRes: Int,
+    contentDescription: String,
+    modifier: Modifier = Modifier,
+    onClick: () -> Unit // New onClick parameter
+) {
     var isPressed by remember { mutableStateOf(false) }
-    val scale by animateFloatAsState(if (isPressed) 0.8f else 1f, label = "scale")
+    val scale by animateFloatAsState(if (isPressed) 0.8f else 1f)
 
+    // Handle the click action
     Image(
         painter = painterResource(id = imageRes),
         contentDescription = contentDescription,
         modifier = modifier
             .size(100.dp)
             .clickable {
-                isPressed = true
-                isPressed = false
+                isPressed = !isPressed // Toggle pressed state
+                onClick() // Trigger the onClick action passed as a parameter
             }
             .scale(scale)
     )
 }
+
 @Preview(showBackground = true)
 @Composable
 fun OptionsPreview() {

@@ -83,6 +83,7 @@ dependencies {
     implementation("org.jetbrains.kotlinx:kotlinx-serialization-json:1.8.0")
     // testing gson
     implementation("com.squareup.retrofit2:converter-gson:2.3.0")
+    implementation("androidx.navigation:navigation-compose:2.8.9")
     testImplementation("junit:junit:4.13.2")
     testImplementation("org.jetbrains.kotlinx:kotlinx-coroutines-test:1.10.1")
 

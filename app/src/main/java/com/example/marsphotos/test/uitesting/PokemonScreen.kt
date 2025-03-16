@@ -38,7 +38,7 @@ fun PokemonNavigationApp(){
             composable(route = PokemonScreen.Start.name) {
                 StartScreenPokemon(
                     onStartButtonClicked = {
-                        navController.navigate(PokemonScreen.Info.name)
+                        navController.navigate(PokemonScreen.Entry.name)
                     },
                     modifier = Modifier.fillMaxSize()
                 )
@@ -48,10 +48,16 @@ fun PokemonNavigationApp(){
                     marsUiState = marsUiState, // ✅ Pass the collected UI state
                     retryAction = { marsViewModel.getMarsPhotos() },
                     modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(0.dp)
+                    contentPadding = PaddingValues(0.dp),
+                    onClick = {
+                        navController.navigate(PokemonScreen.Info.name)
+                    }
                 )
             }
             composable(route = PokemonScreen.Info.name){
+//                PokemonInfoScreen() {
+//
+//                }
 
             }
             composable(route = PokemonScreen.Options.name){

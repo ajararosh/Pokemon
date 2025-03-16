@@ -1,20 +1,9 @@
-
 package com.example.marsphotos.ui.screens
 
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
-import androidx.compose.foundation.layout.Arrangement
-import androidx.compose.foundation.layout.Column
-import androidx.compose.foundation.layout.PaddingValues
-import androidx.compose.foundation.layout.Spacer
-import androidx.compose.foundation.layout.aspectRatio
-import androidx.compose.foundation.layout.fillMaxSize
-import androidx.compose.foundation.layout.fillMaxWidth
-import androidx.compose.foundation.layout.height
-import androidx.compose.foundation.layout.padding
-import androidx.compose.foundation.layout.size
-import androidx.compose.foundation.layout.width
+import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
@@ -26,43 +15,35 @@ import androidx.compose.material3.MaterialTheme
 import androidx.compose.material3.Text
 import androidx.compose.runtime.Composable
 import androidx.compose.ui.Alignment
-import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.res.stringResource
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
-import coil.request.ImageRequest
 import com.example.marsphotos.model.Pokemon
 import com.example.marsphotos.ui.theme.MarsPhotosTheme
 import androidx.compose.foundation.text.KeyboardActions
 import androidx.compose.material3.AlertDialog
 import androidx.compose.material3.TextButton
-import androidx.compose.material3.TextField
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
 import androidx.compose.ui.text.input.ImeAction
 
-import androidx.compose.foundation.Image
-import androidx.compose.foundation.background
 import androidx.compose.foundation.layout.*
-import androidx.compose.material3.OutlinedCard
 import androidx.compose.material3.OutlinedTextField
-import androidx.compose.material3.contentColorFor
-import androidx.compose.runtime.*
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.painterResource
-import androidx.compose.ui.unit.dp
 import com.example.marsphotos.R // Replace with your actual package name
+import com.example.marsphotos.test.uitesting.PressableImage
 
 @Composable
 fun HomeScreen(
     marsUiState: MarsUiState,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
+    onClick: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
 ) {
     var searchQuery by remember { mutableStateOf("") }
@@ -116,11 +97,17 @@ fun HomeScreen(
                 }
                 is MarsUiState.Error -> ErrorScreen(retryAction, modifier = Modifier.fillMaxSize())
             }
+
         }
+        PressableImage(R.drawable.entry_ball,
+            "Entry ball",
+            onClick = {},
+            modifier = Modifier
+                .align(Alignment.BottomCenter) // Centered at the bottom
+                .padding(bottom = 16.dp) // Optional: add some bottom padding for spacing
+        )
     }
 }
-
-
 
 @Composable
 fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
@@ -137,7 +124,6 @@ fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
         )
     )
 }
-
 
 /**
  * The home screen displaying the loading message.
@@ -191,7 +177,6 @@ fun PhotosGridScreen(
     }
 }
 
-
 @Composable
 fun PokemonCard(pokemon: Pokemon, modifier: Modifier = Modifier) {
     val pokemonId = pokemon.url.split("/").dropLast(1).last()
@@ -224,7 +209,7 @@ fun PokemonCard(pokemon: Pokemon, modifier: Modifier = Modifier) {
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)// no elevation
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // no elevation
     ) {
         AsyncImage(
             model = imageUrl,
@@ -254,7 +239,7 @@ fun LoadingScreenPreview() {
 @Composable
 fun ErrorScreenPreview() {
     MarsPhotosTheme {
-        ErrorScreen({})
+        ErrorScreen({}) // Pass an empty retry action
     }
 }
 
@@ -271,6 +256,7 @@ fun PhotosGridScreenPreview() {
 @Composable
 fun HomeScreenPreview() {
     MarsPhotosTheme {
-        HomeScreen(marsUiState = MarsUiState.Success(listOf(Pokemon("bulbasaur", "url"))), retryAction = {})
+        HomeScreen(marsUiState = MarsUiState.Success(listOf(Pokemon("bulbasaur", "url"))), retryAction = {},
+            onClick = {})
     }
 }

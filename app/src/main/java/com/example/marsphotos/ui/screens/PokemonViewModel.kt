@@ -1,8 +1,7 @@
 package com.example.marsphotos.ui.screens
 
-import androidx.compose.runtime.getValue
+import androidx.compose.runtime.State
 import androidx.compose.runtime.mutableStateOf
-import androidx.compose.runtime.setValue
 import androidx.lifecycle.ViewModel
 import androidx.lifecycle.ViewModelProvider
 import androidx.lifecycle.ViewModelProvider.AndroidViewModelFactory.Companion.APPLICATION_KEY
@@ -12,6 +11,9 @@ import androidx.lifecycle.viewmodel.viewModelFactory
 import com.example.marsphotos.PokemonPhotosApplication
 import com.example.marsphotos.data.PokemonRepository
 import com.example.marsphotos.model.Pokemon
+import kotlinx.coroutines.flow.MutableStateFlow
+import kotlinx.coroutines.flow.StateFlow
+import kotlinx.coroutines.flow.asStateFlow
 import kotlinx.coroutines.launch
 import retrofit2.HttpException
 import java.io.IOException
@@ -26,25 +28,19 @@ sealed interface MarsUiState {
 }
 
 class MarsViewModel(private val marsPhotosRepository: PokemonRepository) : ViewModel() {
-    /** The mutable State that stores the status of the most recent request */
-    var marsUiState: MarsUiState by mutableStateOf(MarsUiState.Loading)
-        private set
 
-    /**
-     * Call getMarsPhotos() on init so we can display status immediately.
-     */
+    // Using MutableStateFlow instead of mutableStateOf
+    private val _marsUiState = MutableStateFlow<MarsUiState>(MarsUiState.Loading)
+    val marsUiState: StateFlow<MarsUiState> = _marsUiState.asStateFlow()
+
     init {
         getMarsPhotos()
     }
 
-    /**
-     * Gets Mars photos information from the Mars API Retrofit service and updates the
-     * [MarsPhoto] [List] [MutableList].
-     */
     fun getMarsPhotos() {
         viewModelScope.launch {
-            marsUiState = MarsUiState.Loading
-            marsUiState = try {
+            _marsUiState.value = MarsUiState.Loading
+            _marsUiState.value = try {
                 MarsUiState.Success(marsPhotosRepository.getPokemonList())
             } catch (e: IOException) {
                 MarsUiState.Error
@@ -54,15 +50,12 @@ class MarsViewModel(private val marsPhotosRepository: PokemonRepository) : ViewM
         }
     }
 
-    /**
-     * Factory for [MarsViewModel] that takes [MarsPhotosRepository] as a dependency
-     */
     companion object {
         val Factory: ViewModelProvider.Factory = viewModelFactory {
             initializer {
                 val application = (this[APPLICATION_KEY] as PokemonPhotosApplication)
                 val marsPhotosRepository = application.container.marsPhotosRepository
-                MarsViewModel(marsPhotosRepository = marsPhotosRepository)
+                MarsViewModel(marsPhotosRepository)
             }
         }
     }

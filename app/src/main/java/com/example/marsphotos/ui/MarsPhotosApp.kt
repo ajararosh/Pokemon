@@ -21,6 +21,9 @@ import com.example.marsphotos.R
 import com.example.marsphotos.ui.screens.HomeScreen
 import com.example.marsphotos.ui.screens.MarsViewModel
 
+import androidx.compose.runtime.collectAsState
+import androidx.compose.runtime.getValue
+
 @Composable
 fun MarsPhotosApp() {
     val scrollBehavior = TopAppBarDefaults.enterAlwaysScrollBehavior()
@@ -31,16 +34,20 @@ fun MarsPhotosApp() {
         Surface(
             modifier = Modifier.fillMaxSize()
         ) {
-            val marsViewModel: MarsViewModel =
-                viewModel(factory = MarsViewModel.Factory)
+            val marsViewModel: MarsViewModel = viewModel(factory = MarsViewModel.Factory)
+
+            // Use collectAsState() for Flow
+            val marsUiState by marsViewModel.marsUiState.collectAsState()
+
             HomeScreen(
-                marsUiState = marsViewModel.marsUiState,
+                marsUiState = marsUiState,
                 retryAction = marsViewModel::getMarsPhotos,
                 contentPadding = it
             )
         }
     }
 }
+
 
 @Composable
 fun MarsTopAppBar(scrollBehavior: TopAppBarScrollBehavior, modifier: Modifier = Modifier) {
