@@ -2,6 +2,7 @@ package com.example.marsphotos.test.uitesting
 
 
 import android.graphics.BitmapFactory.Options
+import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.layout.Arrangement
@@ -20,6 +21,11 @@ import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.*
+import androidx.compose.runtime.getValue
+import androidx.compose.runtime.mutableStateOf
+import androidx.compose.runtime.remember
+import androidx.compose.runtime.setValue
+import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.res.painterResource
@@ -73,11 +79,7 @@ fun OptionsScreen() {
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.start_ball),
-                        contentDescription = "Start Ball",
-                        modifier = Modifier.size(100.dp)
-                    )
+                    PressableImage(R.drawable.start_ball,"Game Ball")
                 }
                 // Entry Ball and Text
                 Column(
@@ -89,11 +91,8 @@ fun OptionsScreen() {
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.entry_ball),
-                        contentDescription = "Entry Ball",
-                        modifier = Modifier.size(100.dp)
-                    )
+                    PressableImage(R.drawable.entry_ball,"Entry ball")
+
                 }
                 // Game Ball and Text
                 Column(
@@ -106,18 +105,30 @@ fun OptionsScreen() {
                         fontSize = 16.sp,
                         textAlign = TextAlign.Center
                     )
-                    Image(
-                        painter = painterResource(id = R.drawable.game_ball),
-                        contentDescription = "Game Ball",
-                        modifier = Modifier.size(100.dp)
-                    )
+                    PressableImage(R.drawable.game_ball, "Game Ball")
                 }
             }
         }
     }
 }
 
+@Composable
+fun PressableImage(imageRes: Int, contentDescription: String, modifier: Modifier = Modifier) {
+    var isPressed by remember { mutableStateOf(false) }
+    val scale by animateFloatAsState(if (isPressed) 0.8f else 1f, label = "scale")
 
+    Image(
+        painter = painterResource(id = imageRes),
+        contentDescription = contentDescription,
+        modifier = modifier
+            .size(100.dp)
+            .clickable {
+                isPressed = true
+                isPressed = false
+            }
+            .scale(scale)
+    )
+}
 @Preview(showBackground = true)
 @Composable
 fun OptionsPreview() {
