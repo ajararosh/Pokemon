@@ -24,6 +24,7 @@ import androidx.compose.material3.*
 import androidx.compose.runtime.derivedStateOf
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import com.example.marsphotos.R
@@ -31,7 +32,10 @@ import com.example.marsphotos.R
 // TODO: NAV HOST - COMPOSABLE - SCREENS
 
 @Composable
-fun CenteredButton() {
+fun StartScreenPokemon(
+    onStartButtonClicked: () -> Unit,
+    modifier: Modifier = Modifier
+) {
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -53,7 +57,7 @@ fun CenteredButton() {
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = { /* TODO: Handle click */ }) {
+            Button(onClick = { onStartButtonClicked() }) {
                 Text("Start")
             }
         }
@@ -63,6 +67,11 @@ fun CenteredButton() {
 
 @Preview(showBackground = true)
 @Composable
-fun CenteredButtonPreview() {
-    CenteredButton()
+fun StartScreenPreview() {
+    StartScreenPokemon(
+        onStartButtonClicked = {},
+        modifier = Modifier
+            .padding(dimensionResource(R.dimen.padding_medium))
+            .fillMaxSize()
+    )
 }
