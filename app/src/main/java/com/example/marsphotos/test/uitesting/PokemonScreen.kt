@@ -49,19 +49,25 @@ fun PokemonNavigationApp(){
                     retryAction = { marsViewModel.getMarsPhotos() },
                     modifier = Modifier.fillMaxSize(),
                     contentPadding = PaddingValues(0.dp),
-                    onClick = {
-                        navController.navigate(PokemonScreen.Info.name)
-                    }
+                    navController = navController // Pass navController
                 )
             }
-            composable(route = PokemonScreen.Info.name){
-//                PokemonInfoScreen() {
+//            composable(route = PokemonScreen.Info.name){
+////                PokemonInfoScreen() {
+////
+////                }
 //
-//                }
-
-            }
+//            }
             composable(route = PokemonScreen.Options.name){
-
+                OptionsScreen(navController)
+            }
+            composable("pokemonInfo/{pokemonId}") { backStackEntry ->
+                val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: "1"
+                PokemonInfoScreen(
+                    pokemonId = pokemonId, onBackClick = {
+                        navController.popBackStack()
+                    }
+                )
             }
         }
     }

@@ -32,12 +32,15 @@ import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.text.style.TextAlign
 import androidx.compose.ui.unit.dp
 import androidx.compose.ui.unit.sp
+import androidx.navigation.NavController
+import androidx.navigation.compose.rememberNavController
 import com.example.marsphotos.R
 
 // TODO: NAV HOST - COMPOSABLE - SCREENS
 
 @Composable
-fun OptionsScreen() {
+fun OptionsScreen(navController: NavController) {
+
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
             painter = painterResource(id = R.drawable.pokeball),
@@ -81,7 +84,12 @@ fun OptionsScreen() {
                     )
                     PressableImage(R.drawable.start_ball,
                         "Game Ball",
-                        onClick = {})
+                        onClick = {
+                            navController.popBackStack(
+                                PokemonScreen.Start.name,
+                                inclusive = true)
+                            navController.navigate(PokemonScreen.Start.name)
+                        })
                 }
                 // Entry Ball and Text
                 Column(
@@ -143,5 +151,5 @@ fun PressableImage(
 @Preview(showBackground = true)
 @Composable
 fun OptionsPreview() {
-    OptionsScreen()
+    OptionsScreen(rememberNavController())
 }

@@ -23,6 +23,7 @@ import com.example.marsphotos.ui.screens.MarsViewModel
 
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
+import androidx.navigation.compose.rememberNavController
 
 @Composable
 fun MarsPhotosApp() {
@@ -42,7 +43,9 @@ fun MarsPhotosApp() {
             HomeScreen(
                 marsUiState = marsUiState,
                 retryAction = marsViewModel::getMarsPhotos,
-                contentPadding = it
+                contentPadding = it,
+                modifier = Modifier,
+                navController = rememberNavController()
             )
         }
     }

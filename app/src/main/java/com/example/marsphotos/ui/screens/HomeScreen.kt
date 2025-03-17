@@ -35,77 +35,114 @@ import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.layout.ContentScale
+import androidx.navigation.NavController
+import androidx.navigation.compose.NavHost
+import androidx.navigation.compose.composable
+import androidx.navigation.compose.rememberNavController
 import com.example.marsphotos.R // Replace with your actual package name
+import com.example.marsphotos.test.uitesting.OptionsScreen
+import com.example.marsphotos.test.uitesting.PokemonInfoScreen
 import com.example.marsphotos.test.uitesting.PressableImage
+import com.example.marsphotos.test.uitesting.PokemonScreen
 
 @Composable
 fun HomeScreen(
     marsUiState: MarsUiState,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
-    onClick: () -> Unit,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    navController: NavController // add navController parameter
 ) {
     var searchQuery by remember { mutableStateOf("") }
+    val navController = rememberNavController()
+    //conditional to avoid showing the searchbar
+    var isOptionsScreen by remember { mutableStateOf(false) }
 
-    Box( // Use Box to stack background and content
+    Box(
         modifier = modifier.fillMaxSize()
     ) {
-        // Background Image (Fill entire screen)
-        Image(
-            painter = painterResource(id = R.drawable.pikachu_4k), // Replace with your image
-            contentDescription = null,
-            contentScale = ContentScale.Crop,
-            modifier = Modifier.fillMaxSize()
-        )
+        // Place background outside the Column and NavHost
+        Box(modifier = Modifier.fillMaxSize()) {
+            Image(
+                painter = painterResource(id = R.drawable.pikachu_4k),
+                contentDescription = null,
+                contentScale = ContentScale.Crop,
+                modifier = Modifier.fillMaxSize()
+            )
 
-        // Semi-transparent Overlay
-        Box(
-            modifier = Modifier
-                .fillMaxSize()
-                .background(Color.Black.copy(alpha = 0.1f)) // Adjust alpha value
-        )
+            Box(
+                modifier = Modifier
+                    .fillMaxSize()
+                    .background(Color.Black.copy(alpha = 0.1f))
+            )
+        }
 
-        // Content Column (On top of background and overlay)
         Column(
             modifier = Modifier
                 .fillMaxSize()
-                .padding(contentPadding) // Use contentPadding from parameters
+                .padding(contentPadding)
         ) {
-            // ✅ Search Bar (Fixed at the Top)
-            SearchBar(
-                searchText = searchQuery,
-                onSearchTextChanged = { searchQuery = it }
-            )
+            if(!isOptionsScreen){
+                SearchBar(
+                    searchText = searchQuery,
+                    onSearchTextChanged = { searchQuery = it }
+                )
 
-            Spacer(modifier = Modifier.height(8.dp)) // Adds spacing
+                Spacer(modifier = Modifier.height(8.dp))
+            }
 
-            when (marsUiState) {
-                is MarsUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-                is MarsUiState.Success -> {
-                    // ✅ Filter Pokémon list based on search query
-                    val filteredPokemons = marsUiState.photos.filter { pokemon ->
-                        pokemon.name.contains(searchQuery, ignoreCase = true)
+            NavHost(navController = navController,
+                startDestination = "photosGrid",
+                modifier = Modifier) {
+                composable("photosGrid") {
+                    when (marsUiState) {
+                        is MarsUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
+                        is MarsUiState.Success -> {
+                            val filteredPokemons = marsUiState.photos.filter { pokemon ->
+                                pokemon.name.contains(searchQuery, ignoreCase = true)
+                            }
+
+                            PhotosGridScreen(
+                                pokemons = filteredPokemons,
+                                contentPadding = contentPadding,
+                                modifier = Modifier.fillMaxSize(),
+                                onPokemonClick = { pokemon ->
+                                    val pokemonId = pokemon.url.split("/").dropLast(1).last()
+                                    navController.navigate("pokemonInfo/$pokemonId")
+                                }
+                            )
+                        }
+                        is MarsUiState.Error -> ErrorScreen(retryAction, modifier = Modifier.fillMaxSize())
                     }
+                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                        PressableImage(
+                            R.drawable.entry_ball,
+                            "Entry ball",
+                            onClick = { navController.navigate(PokemonScreen.Options.name) },
+                            modifier = Modifier.padding(bottom = 16.dp)
+                        )
+                    }
+                }
 
-                    // ✅ Scrollable Grid (Search Bar stays at the top)
-                    PhotosGridScreen(
-                        pokemons = filteredPokemons,
-                        contentPadding = contentPadding,
-                        modifier = Modifier.fillMaxSize()
+                composable("pokemonInfo/{pokemonId}") { backStackEntry ->
+                    isOptionsScreen = false // Update state
+                    val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: "1"
+                    PokemonInfoScreen(
+                        pokemonId = pokemonId, onBackClick = {
+                            navController.popBackStack()
+                        }
                     )
                 }
-                is MarsUiState.Error -> ErrorScreen(retryAction, modifier = Modifier.fillMaxSize())
+                // Show Options Screen
+                composable(PokemonScreen.Options.name) {
+                    isOptionsScreen = true
+                    OptionsScreen(navController)
+                }
+
             }
 
         }
-        PressableImage(R.drawable.entry_ball,
-            "Entry ball",
-            onClick = {},
-            modifier = Modifier
-                .align(Alignment.BottomCenter) // Centered at the bottom
-                .padding(bottom = 16.dp) // Optional: add some bottom padding for spacing
-        )
+
     }
 }
 
@@ -165,6 +202,7 @@ fun PhotosGridScreen(
     pokemons: List<Pokemon>,
     modifier: Modifier = Modifier,
     contentPadding: PaddingValues = PaddingValues(0.dp),
+    onPokemonClick: (Pokemon) -> Unit
 ) {
     LazyVerticalGrid(
         columns = GridCells.Adaptive(150.dp),
@@ -172,44 +210,24 @@ fun PhotosGridScreen(
         contentPadding = contentPadding,
     ) {
         items(items = pokemons, key = { pokemon -> pokemon.name }) { pokemon ->
-            PokemonCard(pokemon, modifier = Modifier.padding(4.dp))
+            PokemonCard(pokemon, modifier = Modifier.padding(4.dp), onClick = { onPokemonClick(pokemon) })
         }
     }
 }
 
 @Composable
-fun PokemonCard(pokemon: Pokemon, modifier: Modifier = Modifier) {
+fun PokemonCard(pokemon: Pokemon, modifier: Modifier = Modifier, onClick: () -> Unit) {
     val pokemonId = pokemon.url.split("/").dropLast(1).last()
     val imageUrl = "https://raw.githubusercontent.com/PokeAPI/sprites/master/sprites/pokemon/$pokemonId.png"
-
-    var showDialog by remember { mutableStateOf(false) }
-
-    if (showDialog) {
-        AlertDialog(
-            onDismissRequest = { showDialog = false },
-            title = { Text("Pokémon Details") },
-            text = {
-                Column {
-                    Text("Name: ${pokemon.name.capitalize()}")
-                    // You can add more details such as type, abilities, etc.
-                }
-            },
-            confirmButton = {
-                TextButton(onClick = { showDialog = false }) {
-                    Text("Close")
-                }
-            }
-        )
-    }
 
     Card(
         modifier = modifier
             .aspectRatio(1f)
-            .clickable { showDialog = true },
+            .clickable { onClick() },
         colors = CardDefaults.cardColors(
             containerColor = MaterialTheme.colorScheme.surface.copy(alpha = 0.3f)
         ),
-        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp) // no elevation
+        elevation = CardDefaults.cardElevation(defaultElevation = 0.dp)
     ) {
         AsyncImage(
             model = imageUrl,
@@ -248,7 +266,10 @@ fun ErrorScreenPreview() {
 fun PhotosGridScreenPreview() {
     MarsPhotosTheme {
         val mockData = List(10) { Pokemon("$it", "") }
-        PhotosGridScreen(mockData)
+        PhotosGridScreen(
+            mockData,
+            onPokemonClick = TODO()
+        )
     }
 }
 
@@ -256,7 +277,8 @@ fun PhotosGridScreenPreview() {
 @Composable
 fun HomeScreenPreview() {
     MarsPhotosTheme {
-        HomeScreen(marsUiState = MarsUiState.Success(listOf(Pokemon("bulbasaur", "url"))), retryAction = {},
-            onClick = {})
+        HomeScreen(marsUiState = MarsUiState.Success(listOf(Pokemon("bulbasaur", "url"))),
+            retryAction = {},
+            navController = rememberNavController())
     }
 }
