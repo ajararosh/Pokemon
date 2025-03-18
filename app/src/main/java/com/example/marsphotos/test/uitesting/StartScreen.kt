@@ -1,6 +1,7 @@
 package com.example.marsphotos.test.uitesting
 
 
+import android.media.MediaPlayer
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.layout.Box
 import androidx.compose.foundation.layout.fillMaxSize
@@ -22,13 +23,17 @@ import androidx.compose.material3.Text
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.*
 import androidx.compose.runtime.derivedStateOf
+import androidx.compose.runtime.remember
 import androidx.compose.ui.input.pointer.motionEventSpy
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalContext
 import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
+import androidx.lifecycle.viewmodel.compose.viewModel
+import androidx.navigation.compose.rememberNavController
 import com.example.marsphotos.R
-
+import com.example.marsphotos.model.MusicViewModel
 
 
 @Composable
@@ -36,6 +41,7 @@ fun StartScreenPokemon(
     onStartButtonClicked: () -> Unit,
     modifier: Modifier = Modifier
 ) {
+    val musicViewModel: MusicViewModel = viewModel()
     Box(
         modifier = Modifier.fillMaxSize()
     ) {
@@ -57,7 +63,9 @@ fun StartScreenPokemon(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = { onStartButtonClicked() }) {
+            Button(onClick = {
+//                musicViewModel.start()
+                onStartButtonClicked() }) {
                 Text("Start")
             }
         }

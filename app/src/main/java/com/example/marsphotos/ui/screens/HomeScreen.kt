@@ -57,6 +57,7 @@ fun HomeScreen(
     val navController = rememberNavController()
     //conditional to avoid showing the searchbar
     var isOptionsScreen by remember { mutableStateOf(false) }
+    var isPokemonInfoScren by remember { mutableStateOf(false) }
 
     Box(
         modifier = modifier.fillMaxSize()
@@ -82,7 +83,7 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(contentPadding)
         ) {
-            if(!isOptionsScreen){
+            if(!isOptionsScreen && !isPokemonInfoScren){
                 SearchBar(
                     searchText = searchQuery,
                     onSearchTextChanged = { searchQuery = it }
@@ -95,20 +96,25 @@ fun HomeScreen(
                 startDestination = "photosGrid",
                 modifier = Modifier) {
                 composable("photosGrid") {
+                    // to show the screen correctly
+                    isPokemonInfoScren = false
+                    isOptionsScreen = false
+
                     when (marsUiState) {
                         is MarsUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
                         is MarsUiState.Success -> {
                             val filteredPokemons = marsUiState.photos.filter { pokemon ->
                                 pokemon.name.contains(searchQuery, ignoreCase = true)
                             }
-
                             PhotosGridScreen(
+
                                 pokemons = filteredPokemons,
                                 contentPadding = contentPadding,
                                 modifier = Modifier.fillMaxSize(),
                                 onPokemonClick = { pokemon ->
                                     val pokemonId = pokemon.url.split("/").dropLast(1).last()
-                                    navController.navigate("pokemonInfo/$pokemonId")
+                                    // passign a id to another screen
+                                    navController.navigate("${PokemonScreen.Info.name}/$pokemonId")
                                 }
                             )
                         }
@@ -124,8 +130,8 @@ fun HomeScreen(
                     }
                 }
 
-                composable("pokemonInfo/{pokemonId}") { backStackEntry ->
-                    isOptionsScreen = false // Update state
+                composable("${PokemonScreen.Info.name}/{pokemonId}") { backStackEntry ->
+                    isPokemonInfoScren = true
                     val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: "1"
                     PokemonInfoScreen(
                         pokemonId = pokemonId, onBackClick = {
@@ -160,6 +166,7 @@ fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
             onSearch = { /* Handle search action if needed */ }
         )
     )
+
 }
 
 /**

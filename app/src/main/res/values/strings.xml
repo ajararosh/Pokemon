@@ -19,6 +19,7 @@
     <string name="info">Info</string>
     <string name="entry">Entry</string>
     <string name="options">Options</string>
+    <string name="game">Game</string>
     <string name="loading_failed">Failed to load</string>
     <string name="retry">Retry</string>
     <string name="loading">Loading</string>

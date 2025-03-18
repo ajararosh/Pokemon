@@ -2,6 +2,8 @@ package com.example.marsphotos.test.uitesting
 
 
 import android.graphics.BitmapFactory.Options
+import android.provider.ContactsContract.Profile
+import android.util.Log
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.foundation.Image
 import androidx.compose.foundation.clickable
@@ -36,10 +38,10 @@ import androidx.navigation.NavController
 import androidx.navigation.compose.rememberNavController
 import com.example.marsphotos.R
 
-// TODO: NAV HOST - COMPOSABLE - SCREENS
 
 @Composable
 fun OptionsScreen(navController: NavController) {
+
 
     Box(modifier = Modifier.fillMaxSize()) {
         Image(
@@ -83,11 +85,8 @@ fun OptionsScreen(navController: NavController) {
                         textAlign = TextAlign.Center
                     )
                     PressableImage(R.drawable.start_ball,
-                        "Game Ball",
+                        contentDescription = "Start Ball",
                         onClick = {
-                            navController.popBackStack(
-                                PokemonScreen.Start.name,
-                                inclusive = true)
                             navController.navigate(PokemonScreen.Start.name)
                         })
                 }
@@ -102,7 +101,7 @@ fun OptionsScreen(navController: NavController) {
                         textAlign = TextAlign.Center
                     )
                     PressableImage(R.drawable.entry_ball,"Entry ball",
-                        onClick = {})
+                        onClick = {navController.popBackStack()})
 
                 }
                 // Game Ball and Text
@@ -117,7 +116,11 @@ fun OptionsScreen(navController: NavController) {
                         textAlign = TextAlign.Center
                     )
                     PressableImage(R.drawable.game_ball, "Game Ball",
-                        onClick = {})
+                        onClick = {
+                            Log.d("Navigation", "Navigating to Game screen")
+                            navController.navigate(PokemonScreen.Game.name)
+                        })
+
                 }
             }
         }

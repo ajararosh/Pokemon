@@ -14,13 +14,15 @@ import androidx.compose.runtime.getValue
 import com.example.marsphotos.R
 import com.example.marsphotos.ui.screens.HomeScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
+//import com.example.marsphotos.model.AudioPlayerControls
 import com.example.marsphotos.ui.screens.MarsViewModel
 
 enum class PokemonScreen(@StringRes val title: Int){
     Start(title = R.string.app_name),
     Entry(title = R.string.entry),
     Info(title = R.string.info),
-    Options(title = R.string.options)
+    Options(title = R.string.options),
+    Game(title = R.string.game)
 }
 
 @Composable
@@ -30,11 +32,13 @@ fun PokemonNavigationApp(){
         viewModel(factory = MarsViewModel.Factory)
 
     val marsUiState by marsViewModel.marsUiState.collectAsState()
-    Scaffold {innerPadding ->
+
+    Scaffold{innerPadding ->
         NavHost(
             navController = navController,
-            startDestination = "Start",
+            startDestination = PokemonScreen.Start.name,
             modifier = Modifier.padding(innerPadding)) {
+
             composable(route = PokemonScreen.Start.name) {
                 StartScreenPokemon(
                     onStartButtonClicked = {
@@ -52,22 +56,23 @@ fun PokemonNavigationApp(){
                     navController = navController // Pass navController
                 )
             }
-//            composable(route = PokemonScreen.Info.name){
-////                PokemonInfoScreen() {
-////
-////                }
-//
-//            }
             composable(route = PokemonScreen.Options.name){
                 OptionsScreen(navController)
             }
-            composable("pokemonInfo/{pokemonId}") { backStackEntry ->
+
+            composable("${PokemonScreen.Info.name}/{pokemonId}") { backStackEntry ->
                 val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: "1"
                 PokemonInfoScreen(
                     pokemonId = pokemonId, onBackClick = {
                         navController.popBackStack()
                     }
                 )
+            }
+            composable(route = PokemonScreen.Game.name){
+                PokemonGameScreen(
+
+                )
+
             }
         }
     }

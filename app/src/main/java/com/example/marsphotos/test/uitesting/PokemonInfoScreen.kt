@@ -34,7 +34,10 @@ import com.jakewharton.retrofit2.converter.kotlinx.serialization.asConverterFact
 import okhttp3.MediaType.Companion.toMediaType
 
 @Composable
-fun PokemonInfoScreen(pokemonId: String, onBackClick: () -> Unit) {
+fun PokemonInfoScreen(
+    pokemonId: String,
+    onBackClick: () -> Unit) {
+
     val scope = rememberCoroutineScope()
     var pokemonDetail by remember { mutableStateOf<PokemonDetail?>(null) }
     var description by remember { mutableStateOf("Loading...") }
