@@ -15,7 +15,7 @@ The primary objective at this stage is to establish a working codebase and explo
 Tips
 -----
 
-* For the modifiers, is better to use padding than using offset. Keep the alignment in your content.
+* For the modifiers, is better to use padding than using offset. Maintain alignment in the focus and structure of your content.
 
     * Create your objects in some boxes to apply custom padding and aply proper structure using Column and rows
 
