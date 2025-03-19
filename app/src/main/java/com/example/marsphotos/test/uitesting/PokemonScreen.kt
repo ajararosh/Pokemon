@@ -23,60 +23,61 @@ enum class PokemonScreen(@StringRes val title: Int){
     Info(title = R.string.info),
     Options(title = R.string.options),
     Game(title = R.string.game)
+
 }
-
-@Composable
-fun PokemonNavigationApp(){
-    val navController = rememberNavController()
-    val marsViewModel: MarsViewModel =
-        viewModel(factory = MarsViewModel.Factory)
-
-    val marsUiState by marsViewModel.marsUiState.collectAsState()
-
-    Scaffold{innerPadding ->
-        NavHost(
-            navController = navController,
-            startDestination = PokemonScreen.Start.name,
-            modifier = Modifier.padding(innerPadding)) {
-
-            composable(route = PokemonScreen.Start.name) {
-                StartScreenPokemon(
-                    onStartButtonClicked = {
-                        navController.navigate(PokemonScreen.Entry.name)
-                    },
-                    modifier = Modifier.fillMaxSize()
-                )
-            }
-            composable(route = PokemonScreen.Entry.name) {
-                HomeScreen(
-                    marsUiState = marsUiState, // ✅ Pass the collected UI state
-                    retryAction = { marsViewModel.getMarsPhotos() },
-                    modifier = Modifier.fillMaxSize(),
-                    contentPadding = PaddingValues(0.dp),
-                    navController = navController // Pass navController
-                )
-            }
-            composable(route = PokemonScreen.Options.name){
-                OptionsScreen(navController)
-            }
-
-            composable("${PokemonScreen.Info.name}/{pokemonId}") { backStackEntry ->
-                val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: "1"
-                PokemonInfoScreen(
-                    pokemonId = pokemonId, onBackClick = {
-                        navController.popBackStack()
-                    }
-                )
-            }
-            composable(route = PokemonScreen.Game.name){
-                PokemonGameScreen(
-
-                )
-
-            }
-        }
-    }
-}
+//
+//@Composable
+//fun PokemonNavigationApp(){
+//    val navController = rememberNavController()
+//    val marsViewModel: MarsViewModel =
+//        viewModel(factory = MarsViewModel.Factory)
+//
+//    val marsUiState by marsViewModel.marsUiState.collectAsState()
+//
+//    Scaffold{innerPadding ->
+//        NavHost(
+//            navController = navController,
+//            startDestination = PokemonScreen.Start.name,
+//            modifier = Modifier.padding(innerPadding)) {
+//
+//            composable(route = PokemonScreen.Start.name) {
+//                StartScreenPokemon(
+//                    onStartButtonClicked = {
+//                        navController.navigate(PokemonScreen.Entry.name)
+//                    },
+//                    modifier = Modifier.fillMaxSize()
+//                )
+//            }
+//            composable(route = PokemonScreen.Entry.name) {
+//                HomeScreen(
+//                    marsUiState = marsUiState, // ✅ Pass the collected UI state
+//                    retryAction = { marsViewModel.getMarsPhotos() },
+//                    modifier = Modifier.fillMaxSize(),
+//                    contentPadding = PaddingValues(0.dp),
+//                    navController = navController // Pass navController
+//                )
+//            }
+//            composable(route = PokemonScreen.Options.name){
+//                OptionsScreen(navController)
+//            }
+//
+//            composable("${PokemonScreen.Info.name}/{pokemonId}") { backStackEntry ->
+//                val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: "1"
+//                PokemonInfoScreen(
+//                    pokemonId = pokemonId, onBackClick = {
+//                        navController.popBackStack()
+//                    }
+//                )
+//            }
+//            composable(route = PokemonScreen.Game.name){
+//                PokemonGameScreen(
+//
+//                )
+//
+//            }
+//        }
+//    }
+//}
 
 
 

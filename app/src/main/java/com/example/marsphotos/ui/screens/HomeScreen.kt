@@ -7,7 +7,6 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.foundation.lazy.grid.GridCells
 import androidx.compose.foundation.lazy.grid.LazyVerticalGrid
 import androidx.compose.foundation.lazy.grid.items
-import androidx.compose.foundation.text.KeyboardOptions
 import androidx.compose.material3.Button
 import androidx.compose.material3.Card
 import androidx.compose.material3.CardDefaults
@@ -22,28 +21,18 @@ import androidx.compose.ui.unit.dp
 import coil.compose.AsyncImage
 import com.example.marsphotos.model.Pokemon
 import com.example.marsphotos.ui.theme.MarsPhotosTheme
-import androidx.compose.foundation.text.KeyboardActions
-import androidx.compose.material3.AlertDialog
-import androidx.compose.material3.TextButton
 import androidx.compose.runtime.mutableStateOf
 import androidx.compose.runtime.remember
 import androidx.compose.runtime.*
-import androidx.compose.ui.text.input.ImeAction
 
-import androidx.compose.foundation.layout.*
-import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
-import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
 import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
-import androidx.navigation.compose.NavHost
-import androidx.navigation.compose.composable
 import androidx.navigation.compose.rememberNavController
 import com.example.marsphotos.R // Replace with your actual package name
-import com.example.marsphotos.test.uitesting.OptionsScreen
-import com.example.marsphotos.test.uitesting.PokemonInfoScreen
+//import com.example.marsphotos.test.uitesting.OptionsScreen
 import com.example.marsphotos.test.uitesting.PressableImage
 import com.example.marsphotos.test.uitesting.PokemonScreen
 import com.example.marsphotos.test.codetest.SearchBarCard
@@ -52,17 +41,16 @@ import com.example.marsphotos.test.codetest.SearchBarCard
 
 @Composable
 fun HomeScreen(
-    marsUiState: MarsUiState,
+    marsUiState: MarsUiState.Success,
     retryAction: () -> Unit,
     modifier: Modifier = Modifier,
-    contentPadding: PaddingValues = PaddingValues(0.dp),
-    navController: NavController // add navController parameter
+    contentPadding: PaddingValues = PaddingValues(0.dp), // add navController parameter
+    navController: NavController
 ) {
     var searchQuery by remember { mutableStateOf("") }
-    val navController = rememberNavController()
     //conditional to avoid showing the searchbar
-    var isOptionsScreen by remember { mutableStateOf(false) }
-    var isPokemonInfoScren by remember { mutableStateOf(false) }
+//    var isOptionsScreen by remember { mutableStateOf(false) }
+//    var isPokemonInfoScren by remember { mutableStateOf(false) }
 
     val focusManager = LocalFocusManager.current
 
@@ -71,7 +59,7 @@ fun HomeScreen(
     ) {
         // Place background outside the Column and NavHost
         Box(modifier = Modifier.fillMaxSize()
-            .background(Color.White)) {
+            .background(Color.Black.copy(0.6f))) {
 
             Image(
                 painter = painterResource(id = R.drawable.pikachu_4k),
@@ -80,12 +68,6 @@ fun HomeScreen(
                 modifier = Modifier.fillMaxSize(),
                 alpha = 0.5f
             )
-
-            Box(
-                modifier = Modifier
-                    .fillMaxSize()
-                    .background(Color.Black.copy(alpha = 0.1f))
-            )
         }
 
         Column(
@@ -93,79 +75,50 @@ fun HomeScreen(
                 .fillMaxSize()
                 .padding(contentPadding)
         ) {
-            if(!isOptionsScreen && !isPokemonInfoScren){
+            SearchBarCard(
+                value = searchQuery,
+                onValueChange = { searchQuery = it },
+                placeholder = "Search here",
+                onTypeSelected = {},
+                modifier = Modifier
+                    .background(Color.Black)
+            )
 
-                SearchBarCard(
-                    value = searchQuery,
-                    onValueChange = { searchQuery = it },
-                    placeholder = "Search here",
-                    onTypeSelected = {},
-                    modifier = Modifier
-                        .background(Color.Black)
-                )
+            Spacer(modifier = Modifier.height(8.dp))
 
-                Spacer(modifier = Modifier.height(8.dp))
-            }
-
-            NavHost(navController = navController,
-                startDestination = "photosGrid",
-                modifier = Modifier) {
-                composable("photosGrid") {
-                    // to show the screen correctly
-                    isPokemonInfoScren = false
-                    isOptionsScreen = false
-
-                    when (marsUiState) {
-                        is MarsUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
-                        is MarsUiState.Success -> {
-                            val filteredPokemons = marsUiState.photos.filter { pokemon ->
-                                pokemon.name.contains(searchQuery, ignoreCase = true)
-                            }
-                            PhotosGridScreen(
-
-                                pokemons = filteredPokemons,
-                                contentPadding = contentPadding,
-                                modifier = Modifier.fillMaxSize(),
-                                onPokemonClick = { pokemon ->
-                                    val pokemonId = pokemon.url.split("/").dropLast(1).last()
-                                    // passign a id to another screen
-                                    navController.navigate("${PokemonScreen.Info.name}/$pokemonId")
-                                }
-                            )
-                        }
-                        is MarsUiState.Error -> ErrorScreen(retryAction, modifier = Modifier.fillMaxSize())
+            when (marsUiState) {
+                is MarsUiState.Loading -> LoadingScreen(modifier = Modifier.fillMaxSize())
+                is MarsUiState.Success -> {
+                    val filteredPokemons = marsUiState.photos.filter { pokemon ->
+                        pokemon.name.contains(searchQuery, ignoreCase = true)
                     }
-                    Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
-                        PressableImage(
-                            R.drawable.entry_ball,
-                            "Entry ball",
-                            onClick = { navController.navigate(PokemonScreen.Options.name) },
-                            modifier = Modifier.padding(bottom = 16.dp)
-                        )
-                    }
-                }
+                    PhotosGridScreen(
 
-                composable("${PokemonScreen.Info.name}/{pokemonId}") { backStackEntry ->
-                    isPokemonInfoScren = true
-                    val pokemonId = backStackEntry.arguments?.getString("pokemonId") ?: "1"
-                    PokemonInfoScreen(
-                        pokemonId = pokemonId, onBackClick = {
-                            navController.popBackStack()
+                        pokemons = filteredPokemons,
+                        contentPadding = contentPadding,
+                        modifier = Modifier.fillMaxSize(),
+                        onPokemonClick = { pokemon ->
+                            val pokemonId = pokemon.url.split("/").dropLast(1).last()
+                            // passign a id to another screen
+//                            navController.navigate("${PokemonScreen.Info.name}/$pokemonId")
                         }
                     )
                 }
-                // Show Options Screen
-                composable(PokemonScreen.Options.name) {
-                    isOptionsScreen = true
-                    OptionsScreen(navController)
-                }
-
+                is MarsUiState.Error -> ErrorScreen(retryAction, modifier = Modifier.fillMaxSize())
             }
-
+            Box(modifier = Modifier.fillMaxSize(), contentAlignment = Alignment.BottomCenter) {
+                PressableImage(
+                    R.drawable.entry_ball,
+                    "Entry ball",
+                    onClick = { navController.navigate(PokemonScreen.Options.name) },
+                    modifier = Modifier.padding(bottom = 16.dp)
+                )
+            }
         }
-
     }
 }
+
+
 
 /**
  * The home screen displaying the loading message.
@@ -281,9 +234,10 @@ fun PhotosGridScreenPreview() {
 @Preview(showBackground = true)
 @Composable
 fun HomeScreenPreview() {
-    MarsPhotosTheme {
-        HomeScreen(marsUiState = MarsUiState.Success(listOf(Pokemon("bulbasaur", "url"))),
-            retryAction = {},
-            navController = rememberNavController())
-    }
+    val navController = rememberNavController() // Create a navController for preview
+    HomeScreen(
+        marsUiState = MarsUiState.Success(listOf(Pokemon("bulbasaur", "url"))),
+        retryAction = {},
+        navController = navController
+    )
 }
