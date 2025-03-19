@@ -34,7 +34,9 @@ import androidx.compose.foundation.layout.*
 import androidx.compose.material3.OutlinedTextField
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.graphics.Color
+import androidx.compose.ui.graphics.graphicsLayer
 import androidx.compose.ui.layout.ContentScale
+import androidx.compose.ui.platform.LocalFocusManager
 import androidx.navigation.NavController
 import androidx.navigation.compose.NavHost
 import androidx.navigation.compose.composable
@@ -44,6 +46,9 @@ import com.example.marsphotos.test.uitesting.OptionsScreen
 import com.example.marsphotos.test.uitesting.PokemonInfoScreen
 import com.example.marsphotos.test.uitesting.PressableImage
 import com.example.marsphotos.test.uitesting.PokemonScreen
+import com.example.marsphotos.test.codetest.SearchBarCard
+
+
 
 @Composable
 fun HomeScreen(
@@ -59,16 +64,21 @@ fun HomeScreen(
     var isOptionsScreen by remember { mutableStateOf(false) }
     var isPokemonInfoScren by remember { mutableStateOf(false) }
 
+    val focusManager = LocalFocusManager.current
+
     Box(
         modifier = modifier.fillMaxSize()
     ) {
         // Place background outside the Column and NavHost
-        Box(modifier = Modifier.fillMaxSize()) {
+        Box(modifier = Modifier.fillMaxSize()
+            .background(Color.White)) {
+
             Image(
                 painter = painterResource(id = R.drawable.pikachu_4k),
                 contentDescription = null,
                 contentScale = ContentScale.Crop,
-                modifier = Modifier.fillMaxSize()
+                modifier = Modifier.fillMaxSize(),
+                alpha = 0.5f
             )
 
             Box(
@@ -84,9 +94,14 @@ fun HomeScreen(
                 .padding(contentPadding)
         ) {
             if(!isOptionsScreen && !isPokemonInfoScren){
-                SearchBar(
-                    searchText = searchQuery,
-                    onSearchTextChanged = { searchQuery = it }
+
+                SearchBarCard(
+                    value = searchQuery,
+                    onValueChange = { searchQuery = it },
+                    placeholder = "Search here",
+                    onTypeSelected = {},
+                    modifier = Modifier
+                        .background(Color.Black)
                 )
 
                 Spacer(modifier = Modifier.height(8.dp))
@@ -150,23 +165,6 @@ fun HomeScreen(
         }
 
     }
-}
-
-@Composable
-fun SearchBar(searchText: String, onSearchTextChanged: (String) -> Unit) {
-    OutlinedTextField(
-        value = searchText,
-        onValueChange = { onSearchTextChanged(it) },
-        label = { Text("Search Pokémon") },
-        modifier = Modifier
-            .fillMaxWidth()
-            .padding(start = 4.dp, end = 4.dp, top = 4.dp),
-        keyboardOptions = KeyboardOptions.Default.copy(imeAction = ImeAction.Search),
-        keyboardActions = KeyboardActions(
-            onSearch = { /* Handle search action if needed */ }
-        )
-    )
-
 }
 
 /**
