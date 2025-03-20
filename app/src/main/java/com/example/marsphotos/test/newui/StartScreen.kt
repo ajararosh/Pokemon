@@ -1,4 +1,4 @@
-package com.example.marsphotos.test.uitesting
+package com.example.marsphotos.test.newui
 
 
 import androidx.compose.foundation.Image
@@ -9,26 +9,20 @@ import androidx.compose.runtime.Composable
 import androidx.compose.ui.Modifier
 import androidx.compose.ui.tooling.preview.Preview
 
-import androidx.compose.foundation.layout.padding
 import androidx.compose.foundation.layout.size
 import androidx.compose.ui.Alignment
 import androidx.compose.material3.*
 import androidx.compose.ui.layout.ContentScale
-import androidx.compose.ui.res.dimensionResource
 import androidx.compose.ui.res.painterResource
 import androidx.compose.ui.unit.dp
 import androidx.lifecycle.viewmodel.compose.viewModel
-import androidx.navigation.NavHostController
-import androidx.navigation.compose.rememberNavController
 import com.example.marsphotos.R
 import com.example.marsphotos.model.MusicViewModel
 
 
 @Composable
 fun StartScreenPokemon(
-    onStartButtonClicked: () -> Unit,
-    navHost: NavHostController,
-    modifier: Modifier = Modifier
+    onStartButtonClicked: () -> Unit
 ) {
     val musicViewModel: MusicViewModel = viewModel()
     Box(
@@ -52,10 +46,7 @@ fun StartScreenPokemon(
             modifier = Modifier.fillMaxSize(),
             contentAlignment = Alignment.Center
         ) {
-            Button(onClick = {
-//                musicViewModel.start()
-                    navHost.navigate(PokemonScreen.Entry.name)
-                 }) {
+            Button(onClick = onStartButtonClicked) {
                 Text("Start")
             }
         }
@@ -67,10 +58,6 @@ fun StartScreenPokemon(
 @Composable
 fun StartScreenPreview() {
     StartScreenPokemon(
-        modifier = Modifier
-            .padding(dimensionResource(R.dimen.padding_medium))
-            .fillMaxSize(),
-        onStartButtonClicked = {},
-        navHost = rememberNavController()
+        onStartButtonClicked = {}
     )
 }

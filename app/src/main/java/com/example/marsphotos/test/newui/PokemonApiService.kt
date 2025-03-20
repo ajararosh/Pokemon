@@ -1,4 +1,4 @@
-package com.example.marsphotos.network
+package com.example.marsphotos.test.newui
 
 import com.example.marsphotos.model.Pokemon
 import kotlinx.serialization.Serializable
@@ -6,6 +6,10 @@ import retrofit2.http.GET
 import kotlinx.serialization.SerialName
 import com.example.marsphotos.model.PokemonDetail
 import com.example.marsphotos.model.PokemonSpeciesResponse
+import com.example.marsphotos.test.PokemonSpeciesInfo
+import com.example.marsphotos.test.PokemonTypeWrapper
+import com.example.marsphotos.test.retrofit
+import kotlinx.coroutines.runBlocking
 import retrofit2.http.Path
 
 @Serializable
@@ -28,6 +32,24 @@ interface PokeApiService {
 
     @GET("pokemon-species/{id}")
     suspend fun getPokemonSpecies(@Path("id") id: String): PokemonSpeciesResponse // Add this line!
+}
+
+
+@Serializable
+data class PokemonDetail(
+    val id: Int,
+    val name: String,
+    val height: Int,  // Height in decimeters
+    val weight: Int,  // Weight in hectograms
+    @SerialName("base_experience") val baseExperience: Int,
+    val types: List<PokemonTypeWrapper>,
+    val species: PokemonSpeciesInfo
+)
+
+fun main () = runBlocking {
+    val apiService = retrofit.create(PokeApiService::class.java)
+    val spec = apiService.getPokemonDetails("1")
+    print(spec.species)
 }
 
 

@@ -1,8 +1,8 @@
 package com.example.marsphotos
 
 import android.app.Application
-import com.example.marsphotos.data.AppContainer
-import com.example.marsphotos.data.DefaultAppContainer
+import com.example.marsphotos.test.newui.AppContainer
+import com.example.marsphotos.test.newui.DefaultAppContainer
 
 class PokemonPhotosApplication : Application() {
     /** AppContainer instance used by the rest of classes to obtain dependencies */

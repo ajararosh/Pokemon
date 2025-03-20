@@ -53,8 +53,8 @@ fun SearchBarCard(
     var showMenu by remember { mutableStateOf(false) }
     var showAllTypes by remember { mutableStateOf(false) }
     var selectedTypes by remember { mutableStateOf(setOf<String>()) }
-    var isFocused by remember { mutableStateOf(false) }
 
+    var isFocused by remember { mutableStateOf(false) }
     val focusRequester = remember { FocusRequester() }
     val focusManager = LocalFocusManager.current
 
@@ -62,13 +62,17 @@ fun SearchBarCard(
     Column(modifier = modifier
         .fillMaxWidth()
         .pointerInput(Unit) {
-            detectTapGestures { focusManager.clearFocus() }
+            detectTapGestures {
+                // Don't clear focus if already focused
+                focusManager.clearFocus()
+            }
         }
     ) {
-
         // 🔹 Search Bar
         Row(
-            modifier = Modifier.fillMaxWidth().padding(8.dp),
+            modifier = Modifier
+                .fillMaxWidth()
+                .padding(8.dp),
             verticalAlignment = Alignment.CenterVertically
         ) {
             TextField(
@@ -95,7 +99,10 @@ fun SearchBarCard(
                     unfocusedTextColor = Color.Gray,
                     cursorColor = Color.Black,
                     focusedContainerColor = goldenrodColor.copy(alpha = 0.7f),  // 🔹 Highlighted when focused
-                    unfocusedContainerColor = if (isFocused) goldenrodColor.copy(alpha = 0.7f) else slateBlueGray.copy(alpha = 0.5f) // 🔹 Reverts when unfocused
+                    unfocusedContainerColor = if (isFocused) goldenrodColor.copy(alpha = 0.7f) else slateBlueGray.copy(alpha = 0.5f), // 🔹 Reverts when unfocused
+                    focusedIndicatorColor = Color.Transparent,
+                    unfocusedIndicatorColor = Color.Transparent,
+                    disabledIndicatorColor = Color.Transparent
                 )
             )
             IconButton(onClick = { showMenu = !showMenu }) {
@@ -143,7 +150,9 @@ fun SearchBarCard(
         // 🔹 Type Selection
         if (showAllTypes) {
             LazyRow(
-                modifier = Modifier.fillMaxWidth().padding(8.dp),
+                modifier = Modifier
+                    .fillMaxWidth()
+                    .padding(8.dp),
                 horizontalArrangement = Arrangement.Start
             ) {
                 items(pokemonTypes) { type ->

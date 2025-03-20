@@ -95,6 +95,7 @@ dependencies {
     debugImplementation("androidx.compose.ui:ui-test-manifest")
     debugImplementation("androidx.compose.ui:ui-tooling")
     implementation("androidx.compose.material:material-icons-extended")
-
+    // to handle gift
+    implementation("io.coil-kt:coil-gif:2.5.0")
 
 }

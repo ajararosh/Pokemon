@@ -4,7 +4,7 @@ package com.example.marsphotos.data
 import com.example.marsphotos.model.Pokemon
 import com.example.marsphotos.model.PokemonDetail
 import com.example.marsphotos.model.PokemonSpeciesResponse
-import com.example.marsphotos.network.PokeApiService
+import com.example.marsphotos.test.newui.PokeApiService
 
 /**
  * Repository that fetch mars photos list from marsApi.

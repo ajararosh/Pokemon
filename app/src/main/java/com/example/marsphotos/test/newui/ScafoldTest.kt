@@ -1,18 +1,20 @@
-package com.example.marsphotos.test.uitesting
+package com.example.marsphotos.test.newui
 
 import android.net.http.HttpException
 import android.os.Build
 import androidx.annotation.RequiresExtension
 import androidx.annotation.StringRes
+import androidx.compose.animation.AnimatedVisibility
 import androidx.compose.animation.core.animateFloatAsState
 import androidx.compose.animation.core.tween
+import androidx.compose.animation.fadeIn
+import androidx.compose.animation.fadeOut
 import androidx.compose.foundation.background
 import androidx.compose.foundation.clickable
 import androidx.compose.foundation.interaction.MutableInteractionSource
 import androidx.compose.foundation.interaction.collectIsPressedAsState
 import androidx.compose.foundation.layout.*
 import androidx.compose.material.icons.Icons
-import androidx.compose.material.icons.automirrored.filled.List
 import androidx.compose.material.icons.filled.Add
 import androidx.compose.material3.*
 import androidx.compose.runtime.*
@@ -21,8 +23,10 @@ import androidx.compose.ui.Modifier
 import androidx.compose.ui.draw.scale
 import androidx.compose.ui.graphics.vector.ImageVector
 import androidx.compose.material.icons.filled.Games
-import androidx.compose.material.icons.filled.Info
-import androidx.compose.ui.graphics.BlendMode.Companion.Screen
+import androidx.compose.material.icons.filled.Home
+import androidx.compose.material.icons.filled.PlayArrow
+import androidx.compose.material.icons.filled.Star
+import androidx.compose.material.icons.filled.Stop
 import androidx.compose.ui.graphics.Color
 import androidx.compose.ui.tooling.preview.Preview
 import androidx.compose.ui.unit.dp
@@ -40,12 +44,20 @@ import androidx.navigation.compose.rememberNavController
 import com.example.marsphotos.PokemonPhotosApplication
 import com.example.marsphotos.R
 import com.example.marsphotos.data.PokemonRepository
+import com.example.marsphotos.model.MusicViewModel
 import kotlinx.coroutines.flow.MutableStateFlow
 import kotlinx.coroutines.flow.StateFlow
 import kotlinx.coroutines.launch
 import java.io.IOException
 import com.example.marsphotos.model.Pokemon
 import kotlinx.coroutines.flow.asStateFlow
+import com.example.marsphotos.ui.screens.HomeScreen
+
+
+// Single Implementation
+
+
+// Color Scheme
 
 val MyDarkColorScheme = darkColorScheme(
     primary = Color(0xFFEEE9E9),
@@ -71,13 +83,25 @@ enum class PokemonScreen(@StringRes val title: Int){
 
 }
 
+
+
+// ================================================================= //
+// TODO:==========================Scaffold================================= //
+// ================================================================= //
+
+
 @RequiresExtension(extension = Build.VERSION_CODES.S, version = 7)
 @OptIn(ExperimentalMaterial3Api::class)
 @Composable
+
 fun ScaffoldExample() {
     val navController = rememberNavController()
-    val pokemonViewModel: PokemonViewModel = viewModel(factory = PokemonViewModel.Factory)
+    val pokemonViewModel: PokemonViewModel =
+        viewModel(factory = PokemonViewModel.Factory)
+    val pokemonUiState by pokemonViewModel.pokemonUiState.collectAsState()
 
+    val isMusicControlsVisible = remember { mutableStateOf(false) }
+    val musicViewModel: MusicViewModel = viewModel()
     Scaffold(
         modifier = Modifier
             .fillMaxSize()
@@ -92,23 +116,75 @@ fun ScaffoldExample() {
                     horizontalArrangement = Arrangement.SpaceAround,
                     verticalAlignment = Alignment.CenterVertically
                 ) {
-                    BottomBarItem(icon = Icons.AutoMirrored.Filled.List, label = PokemonScreen.Start.name, navController = navController, route = PokemonScreen.Start.name)
-                    BottomBarItem(icon = Icons.Filled.Info, label = PokemonScreen.Entry.name, navController = navController, route = PokemonScreen.Entry.name)
+//                    BottomBarItem(icon = Icons.AutoMirrored.Filled.List, label = PokemonScreen.Start.name, navController = navController, route = PokemonScreen.Start.name)
+                    BottomBarItem(icon = Icons.Filled.Star, label = PokemonScreen.Start.name, navController = navController, route = PokemonScreen.Start.name)
+                    BottomBarItem(icon = Icons.Filled.Home, label = PokemonScreen.Entry.name, navController = navController, route = PokemonScreen.Entry.name)
                     BottomBarItem(icon = Icons.Filled.Games, label = PokemonScreen.Game.name, navController = navController, route = PokemonScreen.Game.name)
                 }
             }
         },
-        containerColor = Color.Black
+        containerColor = Color.Black,
+        floatingActionButton = {
+            Column {
+                AnimatedVisibility(
+                    visible = isMusicControlsVisible.value,
+                    enter = fadeIn(),
+                    exit = fadeOut()
+                ) {
+                    Row {
+                        FloatingActionButton(
+                            onClick = {
+                                musicViewModel.start()
+                                isMusicControlsVisible.value = false
+                            },
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Icon(Icons.Default.PlayArrow, contentDescription = "Play")
+                        }
+
+                        Spacer(modifier = Modifier.width(8.dp))
+
+                        FloatingActionButton(
+                            onClick = {
+                                musicViewModel.stop()
+                                isMusicControlsVisible.value = false
+                            },
+                            modifier = Modifier.padding(bottom = 8.dp)
+                        ) {
+                            Icon(Icons.Default.Stop, contentDescription = "Stop")
+                        }
+                    }
+                }
+
+                FloatingActionButton(onClick = {
+                    isMusicControlsVisible.value = !isMusicControlsVisible.value
+                }) {
+                    Icon(Icons.Default.Add, contentDescription = "Add")
+                }
+            }
+        }
+
     ) { innerPadding ->
         NavHost(navController = navController, startDestination = PokemonScreen.Start.name, modifier = Modifier.padding(innerPadding)) {
+
             composable(route = PokemonScreen.Start.name) {
                 StartScreenPokemon(onStartButtonClicked = { navController.navigate(PokemonScreen.Entry.name) })
             }
             composable(PokemonScreen.Entry.name) {
-                HomeScreen(pokemonViewModel = pokemonViewModel, retryAction = { pokemonViewModel.getPokemonPhotos() }, contentPadding = innerPadding, navController = navController)
+                HomeScreen(
+                    pokemonUiState = pokemonUiState,
+                    retryAction = { pokemonViewModel.getPokemonPhotos() },
+                    contentPadding = innerPadding,
+                    navController = navController,
+                    modifier = Modifier
+                )
             }
-            composable(PokemonScreen.Game.name) { PokemonGameScreen(onGameButtonClicked = { navController.navigate(PokemonScreen.Start.name) }) }
-            composable(PokemonScreen.Info.name) { PokemonInfoScreen(pokemonId = "1") }
+            composable(PokemonScreen.Game.name) {
+                PokemonGameScreen(onGameButtonClicked = { navController.navigate(PokemonScreen.Start.name)})
+            }
+            composable(PokemonScreen.Info.name) {
+                PokemonInfoScreen(pokemonId = "1")
+            }
         }
     }
 }
@@ -139,32 +215,10 @@ fun BottomBarItem(icon: ImageVector, label: String, navController: NavHostContro
 // ================================================================= //
 
 
-@Composable
-fun StartScreenPokemon(onStartButtonClicked: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Text("Start Screen")
-        Button(onClick = onStartButtonClicked) {
-            Text("Go to Entry")
-        }
-    }
-}
-@Composable
-fun HomeScreen(
-    pokemonViewModel: PokemonViewModel, // Added pokemonViewModel
-    retryAction: () -> Unit, // Added retryAction
-    navController: NavHostController,
-    contentPadding: PaddingValues = PaddingValues(0.dp)
-) {
-    Column(
-        modifier = Modifier.fillMaxSize(),
-        verticalArrangement = Arrangement.Center,
-        horizontalAlignment = Alignment.CenterHorizontally
-    ) {
-        Button(onClick = { navController.navigate(PokemonScreen.Info.name) }) { // Corrected navigation
-            Text("Go to Info Screen")
-        }
-    }
-}
+// Start Screen implemented into another code
+
+// Home Screen implemented into another code
+
 @Composable
 fun PokemonInfoScreen(pokemonId: String) {
     Box(
@@ -182,15 +236,15 @@ fun PokemonInfoScreen(pokemonId: String) {
     }
 
 }
-@Composable
-fun PokemonGameScreen(onGameButtonClicked: () -> Unit) {
-    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
-        Text("Game Screen")
-        Button(onClick = onGameButtonClicked) {
-            Text("Go to Start")
-        }
-    }
-}
+//@Composable
+//fun PokemonGameScreen(onGameButtonClicked: () -> Unit) {
+//    Column(modifier = Modifier.fillMaxSize(), horizontalAlignment = Alignment.CenterHorizontally, verticalArrangement = Arrangement.Center) {
+//        Text("Game Screen")
+//        Button(onClick = onGameButtonClicked) {
+//            Text("Go to Start")
+//        }
+//    }
+//}
 
 // ================================================================= //
 // TODO:==========================UI STATE================================= //
