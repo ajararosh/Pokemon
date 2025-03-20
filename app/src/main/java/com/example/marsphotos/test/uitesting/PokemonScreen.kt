@@ -12,19 +12,19 @@ import androidx.navigation.compose.rememberNavController
 import androidx.compose.runtime.collectAsState
 import androidx.compose.runtime.getValue
 import com.example.marsphotos.R
-import com.example.marsphotos.ui.screens.HomeScreen
+//import com.example.marsphotos.ui.screens.HomeScreen
 import androidx.lifecycle.viewmodel.compose.viewModel
 //import com.example.marsphotos.model.AudioPlayerControls
-import com.example.marsphotos.ui.screens.MarsViewModel
+//import com.example.marsphotos.ui.screens.MarsViewModel
 
-enum class PokemonScreen(@StringRes val title: Int){
-    Start(title = R.string.app_name),
-    Entry(title = R.string.entry),
-    Info(title = R.string.info),
-    Options(title = R.string.options),
-    Game(title = R.string.game)
-
-}
+//enum class PokemonScreen(@StringRes val title: Int){
+//    Start(title = R.string.app_name),
+//    Entry(title = R.string.entry),
+//    Info(title = R.string.info),
+//    Options(title = R.string.options),
+//    Game(title = R.string.game)
+//
+//}
 //
 //@Composable
 //fun PokemonNavigationApp(){

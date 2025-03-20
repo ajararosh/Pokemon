@@ -11,7 +11,7 @@ import okhttp3.MediaType.Companion.toMediaType
  * Dependency Injection container at the application level.
  */
 interface AppContainer {
-    val marsPhotosRepository: PokemonRepository
+    val pokemonPhotosRepository: PokemonRepository
 }
 
 /**
@@ -46,7 +46,7 @@ class DefaultAppContainer : AppContainer {
      * DI implementation for Mars photos repository
      */
 
-    override val marsPhotosRepository: PokemonRepository by lazy {
+    override val pokemonPhotosRepository: PokemonRepository by lazy {
         NetworkPokemonRepository(retrofitService)
     }
 
