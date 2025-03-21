@@ -57,7 +57,7 @@ fun CollapsingSearchBarScreen() {
     var searchQuery by remember { mutableStateOf("") }
     var showSearchBar by remember { mutableStateOf(false) } // Toggle visibility
     val skyBlue = Color(0xFF1F81BE)
-    val yellow = Color(0xC9F1E461)
+    val pastelblue = Color(0xffb2c5ff)
 
     Scaffold(
         modifier = Modifier.nestedScroll(scrollBehavior.nestedScrollConnection),
@@ -82,7 +82,7 @@ fun CollapsingSearchBarScreen() {
                                     modifier = Modifier.align(Alignment.Start),
                                     fontWeight = FontWeight.Bold,
                                     fontFamily = FontFamily.SansSerif,
-                                    color = skyBlue
+                                    color = Color.White
                                 )
 
                                 Image(
@@ -100,7 +100,7 @@ fun CollapsingSearchBarScreen() {
                     },
                     scrollBehavior = scrollBehavior,
                     colors = TopAppBarDefaults.largeTopAppBarColors(
-                        containerColor = yellow,
+                        containerColor = pastelblue,
                         scrolledContainerColor = Color.Black,
                         titleContentColor = Color.White,
                         navigationIconContentColor = Color.White,
@@ -120,10 +120,12 @@ fun CollapsingSearchBarScreen() {
 
                 // Search Bar
                 if (showSearchBar) {
-                    SearchBar(
+                    SearchBarCard(
                         value = searchQuery,
-                        onValueChange = { searchQuery = it },
-                        modifier = Modifier.fillMaxWidth()
+                        onValueChange = {searchQuery = it},
+                        modifier = Modifier.fillMaxWidth(),
+                        placeholder = "Search here...",
+                        onTypeSelected = {}
                     )
                 }
             }
@@ -141,27 +143,6 @@ fun CollapsingSearchBarScreen() {
             }
         }
     }
-}
-
-@Composable
-fun SearchBar(
-    value: String,
-    onValueChange: (String) -> Unit,
-    modifier: Modifier = Modifier
-) {
-    TextField(
-        value = value,
-        onValueChange = onValueChange,
-        placeholder = { Text("Search Pokémon...") },
-        singleLine = true,
-        modifier = modifier.fillMaxWidth(), // Ensures it sticks to App Bar
-        leadingIcon = {
-            Icon(
-                imageVector = Icons.Default.Search,
-                contentDescription = "Search Icon"
-            )
-        }
-    )
 }
 
 @Composable
